@@ -483,7 +483,7 @@ The following examples illustrate the usage of various features of the ModelJSON
 			"name": "Prey",
 			"behavior": {
 				"initial_value": 400,
-				"non_negative": false,
+				"non_negative": true,
 				"units": "Prey"
 			},
 			"display": {
@@ -548,7 +548,7 @@ The following examples illustrate the usage of various features of the ModelJSON
 			"name": "Predators",
 			"behavior": {
 				"initial_value": 20,
-				"non_negative": false,
+				"non_negative": true,
 				"units": "Predators"
 			},
 			"display": {
@@ -918,7 +918,7 @@ The following examples illustrate the usage of various features of the ModelJSON
 				"size": [100, 40]
 			},
 			"behavior": {
-				"initial_value": "true"
+				"initial_value": true
 			}
 		},
 		{
@@ -929,7 +929,7 @@ The following examples illustrate the usage of various features of the ModelJSON
 				"size": [100, 40]
 			},
 			"behavior": {
-				"initial_value": "false"
+				"initial_value": false
 			}
 		},
 		{
@@ -940,7 +940,7 @@ The following examples illustrate the usage of various features of the ModelJSON
 				"size": [100, 40]
 			},
 			"behavior": {
-				"initial_value": "false"
+				"initial_value": false
 			}
 		},
 		{
@@ -973,7 +973,7 @@ The following examples illustrate the usage of various features of the ModelJSON
 			},
 			"behavior": {
 				"initial_value": 0,
-				"non_negative": false,
+				"non_negative": true,
 				"units": "Liters"
 			}
 		},
