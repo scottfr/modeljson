@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ModelJSON</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script nonce="<%= cspNonce %>"></script>
+  <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #fafafa;
+        color: #333;
+        line-height: 1.6;
+        padding: 20px;
+    }
+
+    body {
+        width: 90%;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    h1 {
+        margin-bottom: 16px;
+        font-size: 2rem;
+        color: #184a5cfd;
+    }
+
+    p {
+        margin-bottom: 16px;
+    }
+
+    a {
+        color: #0066cc;
+        text-decoration: none;
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
+
+    .drop-zone {
+  border: 3px dashed #aac6c6;
+  border-radius: 8px;
+  padding: 2rem;
+  text-align: center;
+  margin: 2rem 0;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.drop-zone.dragover {
+  border-color: #0066cc;
+  background-color: rgba(0, 102, 204, 0.1);
+}
+
+.drop-zone-content {
+  color: #666;
+}
+
+.drop-zone-content i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+.examples-list {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+}
+
+.examples-list li {
+  margin: 0.5rem 0;
+}
+
+.examples-list a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #0066cc;
+  text-decoration: none;
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+
+.examples-list a:hover {
+  background: rgba(0, 102, 204, 0.1);
+  text-decoration: none !important;
+  border-bottom: none !important;
+}
+
+.spec-section, .examples-section {
+  margin: 3rem 0;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: #0066cc;
+  color: white;
+}
+
+.btn-secondary {
+  background: #6c757d;
+  color: white;
+}
+
+  </style>
+</html>
+<body>
+    <img src="images/modeljson.png" alt="ModelJSON Logo" height="80" />
+    <h1>ModelJSON Playground</h1>
+
+    <p>ModelJSON is an <a href="https://github.com/scottfr/modeljson">open format</a> for sharing systems models. This playground lets you preview ModelJSON files.</p>
+    
+    <div id="drop-zone" class="drop-zone">
+      <div class="drop-zone-content">
+        <svg style="width: 100px; height: 100px; opacity: .4; margin-bottom: 32px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M149.9 349.1l-.2-.2-32.8-28.9 32.8-28.9c3.6-3.2 4-8.8 .8-12.4l-.2-.2-17.4-18.6c-3.4-3.6-9-3.7-12.4-.4l-57.7 54.1c-3.7 3.5-3.7 9.4 0 12.8l57.7 54.1c1.6 1.5 3.8 2.4 6 2.4 2.4 0 4.8-1 6.4-2.8l17.4-18.6c3.3-3.5 3.1-9.1-.4-12.4zm220-251.2L286 14C277 5 264.8-.1 252.1-.1H48C21.5 0 0 21.5 0 48v416c0 26.5 21.5 48 48 48h288c26.5 0 48-21.5 48-48V131.9c0-12.7-5.1-25-14.1-34zM256 51.9l76.1 76.1H256zM336 464H48V48h160v104c0 13.3 10.7 24 24 24h104zM209.6 214c-4.7-1.4-9.5 1.3-10.9 6L144 408.1c-1.4 4.7 1.3 9.6 6 10.9l24.4 7.1c4.7 1.4 9.6-1.4 10.9-6L240 231.9c1.4-4.7-1.3-9.6-6-10.9zm24.5 76.9l.2 .2 32.8 28.9-32.8 28.9c-3.6 3.2-4 8.8-.8 12.4l.2 .2 17.4 18.6c3.3 3.5 8.9 3.7 12.4 .4l57.7-54.1c3.7-3.5 3.7-9.4 0-12.8l-57.7-54.1c-3.5-3.3-9.1-3.2-12.4 .4l-17.4 18.6c-3.3 3.5-3.1 9.1 .4 12.4z"/></svg>
+
+        <p style="font-size: large;">Drag and drop your ModelJSON file here<br>or click to upload</p>
+        <input type="file" id="fileInput" accept=".json" class="file-input" hidden>
+      </div>
+    </div>
+    <p>
+      This preview can only handle ModelJSON files of a limited size. For larger files, you can import/export ModelJSON filest from the Share menu in an Insight Maker model (https://insightmaker.com/insight > "Share menu" > "Import").
+    </p>
+
+
+
+    <div class="spec-section">
+    <h1 style="margin-bottom: 24px">ModelJSON Specification</h1>
+
+    <p>The <a href="https://github.com/scottfr/modeljson">ModelJSON specification is availble here</a>. Comments and feedback on it are welcomed as Github issues.</p>
+
+    </div>
+
+    <div class="examples-section">
+      <h1>Example ModelJSON Files</h1>
+      <p>Download these files and then try them in the preview above.</p>
+      <ul class="examples-list">
+        
+      </ul>
+    </div>
+
+
+<script>
+const dropZone = document.getElementById('drop-zone');
+const fileInput = document.getElementById('fileInput');
+
+dropZone.addEventListener('click', () => fileInput.click());
+
+['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+  dropZone.addEventListener(eventName, preventDefaults, false);
+});
+
+function preventDefaults (e) {
+  e.preventDefault();
+  e.stopPropagation();
+}
+
+['dragenter', 'dragover'].forEach(eventName => {
+  dropZone.addEventListener(eventName, highlight, false);
+});
+
+['dragleave', 'drop'].forEach(eventName => {
+  dropZone.addEventListener(eventName, unhighlight, false);
+});
+
+function highlight(e) {
+  dropZone.classList.add('dragover');
+}
+
+function unhighlight(e) {
+  dropZone.classList.remove('dragover');
+}
+
+dropZone.addEventListener('drop', handleDrop, false);
+fileInput.addEventListener('change', handleFileSelect, false);
+
+function handleDrop(e) {
+  const dt = e.dataTransfer;
+  const files = dt.files;
+  handleFiles(files);
+}
+
+function handleFileSelect(e) {
+  const files = e.target.files;
+  handleFiles(files);
+}
+
+function handleFiles(files) {
+  const file = files[0];
+  if (file && file.type === 'application/json') {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const content = e.target.result;
+
+      // check if the content is valid JSON
+      let json = null;
+        try {
+            json = JSON.parse(content);
+        } catch (error) {
+            alert('Invalid JSON file');
+            return;
+        }
+
+      let modelString = encodeURIComponent(JSON.stringify(json));
+
+      if (modelString.length > 8_000) {
+        alert('This model is too large (>8 Kb) to preview via this playground. Please use the Insight Maker website (https://insightmaker.com/insight > "Share menu" > "Import") to import it.');
+        return;
+      }
+
+      window.location.href = `https://insightmaker.com/modeljson/view?modeljson=${modelString}`;
+    };
+    reader.readAsText(file);
+  } else {
+    alert('Please upload a JSON file');
+  }
+}
+
+
+const EXAMPLES = [
+    {
+        file: 'bathtub.json',
+        name: 'Bathtub Model',
+        modeljson: `{
+    "engine": "SIMULATION_PACKAGE",
+    "name": "Bathtub",
+    "simulation": {
+        "algorithm": "RK1",
+        "time_start": 0,
+        "time_length": 20,
+        "time_step": 1,
+        "time_units": "MINUTES"
+    },
+    "elements": [
+        {
+            "type": "STATE",
+            "name": "Is Filling",
+            "display": {
+                "coordinates": [
+                    630,
+                    110
+                ],
+                "size": [
+                    100,
+                    40
+                ]
+            },
+            "behavior": {
+                "initial_value": true
+            }
+        },
+        {
+            "type": "STATE",
+            "name": "Is Bathing",
+            "display": {
+                "coordinates": [
+                    630,
+                    230
+                ],
+                "size": [
+                    100,
+                    40
+                ]
+            },
+            "behavior": {
+                "initial_value": false
+            }
+        },
+        {
+            "type": "STATE",
+            "name": "Is Draining",
+            "display": {
+                "coordinates": [
+                    630,
+                    350
+                ],
+                "size": [
+                    100,
+                    40
+                ]
+            },
+            "behavior": {
+                "initial_value": false
+            }
+        },
+        {
+            "type": "TRANSITION",
+            "name": "Done Filling",
+            "from": "Is Filling",
+            "to": "Is Bathing",
+            "behavior": {
+                "trigger": "TIMEOUT",
+                "value": 5
+            }
+        },
+        {
+            "type": "TRANSITION",
+            "name": "Bath Over",
+            "from": "Is Bathing",
+            "to": "Is Draining",
+            "behavior": {
+                "trigger": "TIMEOUT",
+                "value": 5
+            }
+        },
+        {
+            "type": "STOCK",
+            "name": "Bathtub",
+            "description": "The bathtub starts empty.",
+            "display": {
+                "coordinates": [
+                    390,
+                    220
+                ],
+                "size": [
+                    100,
+                    40
+                ]
+            },
+            "behavior": {
+                "initial_value": 0,
+                "non_negative": true,
+                "units": "Liters"
+            }
+        },
+        {
+            "type": "FLOW",
+            "name": "Filling",
+            "description": "Water fills at a rate of 10 liters per minute.",
+            "from": null,
+            "to": "Bathtub",
+            "display": {
+                "from_coordinates": [
+                    440,
+                    90
+                ]
+            },
+            "behavior": {
+                "value": "if [Is Filling] then\\n  10\\nend if",
+                "non_negative": true,
+                "units": "Liters/Minute"
+            }
+        },
+        {
+            "type": "FLOW",
+            "name": "Draining",
+            "description": "Water drains at a rate of 20% per minute.",
+            "from": "Bathtub",
+            "to": null,
+            "display": {
+                "to_coordinates": [
+                    440,
+                    400
+                ]
+            },
+            "behavior": {
+                "value": "if [Is Draining] then\\n  {0.2 1/Minute} * [Bathtub]\\nend if",
+                "non_negative": true,
+                "units": "Liters/Minute"
+            }
+        },
+        {
+            "type": "LINK",
+            "from": "Is Filling",
+            "to": "Filling"
+        },
+        {
+            "type": "LINK",
+            "from": "Is Draining",
+            "to": "Draining"
+        }
+    ],
+    "visualizations": [
+        {
+            "type": "TIME_SERIES",
+            "name": "Bathtub Volume",
+            "elements": [
+                "Bathtub"
+            ]
+        },
+        {
+            "type": "TIME_SERIES",
+            "name": "States",
+            "elements": [
+                "Is Filling",
+                "Is Bathing",
+                "Is Draining"
+            ]
+        }
+    ]
+}
+`
+    },
+    {
+        file: 'cld.json',
+        name: 'Casual Loop Diagram',
+        modeljson: `{
+    "elements": [
+        {
+            "type": "VARIABLE",
+            "name": "Population",
+            "display": {
+                "coordinates": [
+                    140,
+                    100
+                ],
+                "size": [
+                    120,
+                    50
+                ]
+            }
+        },
+        {
+            "type": "VARIABLE",
+            "name": "Births",
+            "display": {
+                "coordinates": [
+                    90,
+                    280
+                ],
+                "size": [
+                    120,
+                    50
+                ]
+            }
+        },
+        {
+            "type": "VARIABLE",
+            "name": "Carrying Capacity",
+            "display": {
+                "coordinates": [
+                    480,
+                    60
+                ],
+                "size": [
+                    130,
+                    50
+                ]
+            }
+        },
+        {
+            "type": "VARIABLE",
+            "name": "Deaths",
+            "display": {
+                "coordinates": [
+                    430,
+                    180
+                ],
+                "size": [
+                    120,
+                    50
+                ]
+            }
+        },
+        {
+            "type": "LINK",
+            "from": "Population",
+            "to": "Deaths",
+            "behavior": {
+                "polarity": "POSITIVE"
+            }
+        },
+        {
+            "type": "LINK",
+            "from": "Population",
+            "to": "Births",
+            "behavior": {
+                "polarity": "POSITIVE"
+            }
+        },
+        {
+            "type": "VARIABLE",
+            "name": "Net Growth",
+            "display": {
+                "coordinates": [
+                    320,
+                    320
+                ],
+                "size": [
+                    120,
+                    50
+                ]
+            }
+        },
+        {
+            "type": "LINK",
+            "from": "Deaths",
+            "to": "Net Growth",
+            "behavior": {
+                "polarity": "NEGATIVE"
+            }
+        },
+        {
+            "type": "LINK",
+            "from": "Carrying Capacity",
+            "to": "Deaths",
+            "behavior": {
+                "polarity": "NEGATIVE"
+            }
+        },
+        {
+            "type": "LINK",
+            "from": "Births",
+            "to": "Net Growth",
+            "behavior": {
+                "polarity": "POSITIVE"
+            }
+        },
+        {
+            "type": "LINK",
+            "from": "Net Growth",
+            "to": "Population",
+            "behavior": {
+                "polarity": "POSITIVE"
+            }
+        }
+    ]
+}`
+    },
+    {
+        file: 'disease.json',
+        name: 'Disease Model',
+        modeljson: `{
+    "engine": "SIMULATION_PACKAGE",
+    "simulation": {
+        "algorithm": "RK1",
+        "time_start": 0,
+        "time_length": 20,
+        "time_step": 0.2,
+        "time_units": "WEEKS"
+    },
+    "elements": [
+        {
+            "type": "STOCK",
+            "name": "S",
+            "description": "Initial number of susceptible individuals.",
+            "behavior": {
+                "initial_value": 100
+            },
+            "display": {
+                "interactive": true,
+                "interactive_min": 0,
+                "interactive_max": 100,
+                "coordinates": [
+                    140,
+                    60
+                ],
+                "size": [
+                    100,
+                    40
+                ]
+            }
+        },
+        {
+            "type": "STOCK",
+            "name": "I",
+            "description": "Initial number of infected individuals.",
+            "behavior": {
+                "initial_value": 3
+            },
+            "display": {
+                "coordinates": [
+                    140,
+                    190
+                ],
+                "size": [
+                    100,
+                    40
+                ],
+                "interactive": true,
+                "interactive_min": 0,
+                "interactive_max": 100
+            }
+        },
+        {
+            "type": "STOCK",
+            "name": "R",
+            "description": "Initial number of recovered individuals.",
+            "behavior": {
+                "initial_value": 0
+            },
+            "display": {
+                "coordinates": [
+                    140,
+                    310
+                ],
+                "size": [
+                    100,
+                    40
+                ],
+                "interactive": true,
+                "interactive_min": 0,
+                "interactive_max": 100
+            }
+        },
+        {
+            "type": "VARIABLE",
+            "name": "γ",
+            "behavior": {
+                "value": 0.3
+            },
+            "display": {
+                "coordinates": [
+                    50,
+                    185
+                ],
+                "size": [
+                    50,
+                    50
+                ],
+                "interactive": true,
+                "interactive_min": 0,
+                "interactive_max": 1
+            }
+        },
+        {
+            "type": "VARIABLE",
+            "name": "β",
+            "behavior": {
+                "value": 0.01
+            },
+            "display": {
+                "coordinates": [
+                    50,
+                    40
+                ],
+                "size": [
+                    50,
+                    50
+                ],
+                "interactive": true,
+                "interactive_min": 0,
+                "interactive_max": 0.05
+            }
+        },
+        {
+            "type": "FLOW",
+            "name": "Infection",
+            "from": "S",
+            "to": "I",
+            "behavior": {
+                "value": "[β] * [S] * [I]"
+            }
+        },
+        {
+            "type": "FLOW",
+            "name": "Recovery",
+            "from": "I",
+            "to": "R",
+            "behavior": {
+                "value": "[γ] * [I]"
+            }
+        },
+        {
+            "type": "LINK",
+            "from": "β",
+            "to": "Infection"
+        },
+        {
+            "type": "LINK",
+            "from": "γ",
+            "to": "Recovery"
+        }
+    ],
+    "visualizations": [
+        {
+            "type": "TIME_SERIES",
+            "name": "Disease Spread",
+            "elements": [
+                "I",
+                "R",
+                "S"
+            ]
+        }
+    ]
+}
+`
+    },
+    {
+        file: 'predator_prey.json',
+        name: 'Predator-Prey Model',
+        modeljson: `{
+    "engine": "SIMULATION_PACKAGE",
+    "name": "Predator Prey Model",
+    "description": "Version of the classic Lotka-Volterra model.",
+    "simulation": {
+        "algorithm": "RK4",
+        "time_start": 2000,
+        "time_length": 50,
+        "time_step": 0.5,
+        "time_units": "YEARS"
+    },
+    "elements": [
+        {
+            "type": "STOCK",
+            "name": "Prey",
+            "behavior": {
+                "initial_value": 400,
+                "non_negative": true,
+                "units": "Prey"
+            },
+            "display": {
+                "interactive": true,
+                "interactive_min": 0,
+                "interactive_max": 1000,
+                "coordinates": [
+                    135,
+                    214
+                ],
+                "size": [
+                    100,
+                    40
+                ]
+            }
+        },
+        {
+            "type": "VARIABLE",
+            "name": "Prey Birth Rate",
+            "display": {
+                "coordinates": [
+                    30,
+                    30
+                ],
+                "size": [
+                    120,
+                    50
+                ]
+            },
+            "behavior": {
+                "value": 0.25,
+                "units": "1 / Years"
+            }
+        },
+        {
+            "type": "VARIABLE",
+            "name": "Prey Death Rate",
+            "display": {
+                "coordinates": [
+                    285,
+                    371
+                ],
+                "size": [
+                    150,
+                    50
+                ]
+            },
+            "behavior": {
+                "value": "{0.005 1/(Predators * Years)} * [Predators]",
+                "units": "1 / Years"
+            }
+        },
+        {
+            "type": "VARIABLE",
+            "name": "Predator Birth Rate",
+            "display": {
+                "coordinates": [
+                    300,
+                    50
+                ],
+                "size": [
+                    120,
+                    50
+                ]
+            },
+            "behavior": {
+                "value": "{0.0002 1 / (Prey * Years)} * [Prey]",
+                "units": "1 / Years"
+            }
+        },
+        {
+            "type": "VARIABLE",
+            "name": "Predator Death Rate",
+            "display": {
+                "coordinates": [
+                    637,
+                    340
+                ],
+                "size": [
+                    120,
+                    50
+                ]
+            },
+            "behavior": {
+                "value": 0.25,
+                "units": "1 / Years"
+            }
+        },
+        {
+            "type": "STOCK",
+            "name": "Predators",
+            "behavior": {
+                "initial_value": 20,
+                "non_negative": true,
+                "units": "Predators"
+            },
+            "display": {
+                "interactive": true,
+                "interactive_min": 0,
+                "interactive_max": 100,
+                "coordinates": [
+                    506,
+                    212
+                ],
+                "size": [
+                    100,
+                    40
+                ]
+            }
+        },
+        {
+            "type": "FLOW",
+            "name": "Prey Births",
+            "from": null,
+            "to": "Prey",
+            "display": {
+                "from_coordinates": [
+                    185,
+                    62
+                ]
+            },
+            "behavior": {
+                "value": "[Prey]*[Prey Birth Rate]",
+                "non_negative": true,
+                "units": "Prey / Years"
+            }
+        },
+        {
+            "type": "FLOW",
+            "name": "Prey Deaths",
+            "from": "Prey",
+            "to": null,
+            "display": {
+                "to_coordinates": [
+                    185,
+                    422
+                ]
+            },
+            "behavior": {
+                "value": "[Prey]*[Prey Death Rate]",
+                "non_negative": true,
+                "units": "Prey / Years"
+            }
+        },
+        {
+            "type": "FLOW",
+            "name": "Predator Births",
+            "from": null,
+            "to": "Predators",
+            "display": {
+                "from_coordinates": [
+                    556,
+                    60
+                ]
+            },
+            "behavior": {
+                "value": "[Predators]*[Predator Birth Rate]",
+                "non_negative": true,
+                "units": "Predators / Years"
+            }
+        },
+        {
+            "type": "FLOW",
+            "name": "Predator Deaths",
+            "from": "Predators",
+            "to": null,
+            "display": {
+                "to_coordinates": [
+                    556,
+                    420
+                ]
+            },
+            "behavior": {
+                "value": "[Predator Death Rate]*[Predators]",
+                "non_negative": true,
+                "units": "Predators / Years"
+            }
+        },
+        {
+            "type": "LINK",
+            "from": "Prey Birth Rate",
+            "to": "Prey Births"
+        },
+        {
+            "type": "LINK",
+            "from": "Prey Death Rate",
+            "to": "Prey Deaths"
+        },
+        {
+            "type": "LINK",
+            "from": "Predators",
+            "to": "Prey Death Rate"
+        },
+        {
+            "type": "LINK",
+            "from": "Predator Death Rate",
+            "to": "Predator Deaths"
+        },
+        {
+            "type": "LINK",
+            "from": "Predator Birth Rate",
+            "to": "Predator Births"
+        },
+        {
+            "type": "LINK",
+            "from": "Prey",
+            "to": "Predator Birth Rate"
+        }
+    ],
+    "visualizations": [
+        {
+            "type": "TIME_SERIES",
+            "name": "Prey and Predators",
+            "elements": [
+                "Prey",
+                "Predators"
+            ]
+        },
+        {
+            "type": "TABLE",
+            "name": "Details Table",
+            "elements": [
+                "Predators",
+                "Prey",
+                "Predator Deaths",
+                "Predator Births",
+                "Prey Births",
+                "Prey Deaths"
+            ]
+        }
+    ]
+}
+`},
+  {
+    file: 'pendulum.json',
+    name: 'Pendulum Model',
+    modeljson: `{
+    "engine": "SIMULATION_PACKAGE",
+    "name": "Damped pendulum",
+    "description": "A simple damped pendulum model. Uses common SI units mapping to SIMULATION_PACKAGE built-in units.",
+    "simulation": {
+        "algorithm": "RK4",
+        "time_start": 0,
+        "time_length": 10,
+        "time_step": 0.1,
+        "time_units": "SECONDS"
+    },
+    "units": [
+        {
+            "name": "kg",
+            "base": "grams",
+            "to_base": 0.001
+        },
+        {
+            "name": "s",
+            "base": "seconds",
+            "to_base": 1
+        },
+        {
+            "name": "m",
+            "base": "meters",
+            "to_base": 1
+        },
+        {
+            "name": "rad",
+            "base": "radians",
+            "to_base": 1
+        }
+    ],
+    "elements": [
+        {
+            "type": "STOCK",
+            "name": "Angle",
+            "display": {
+                "coordinates": [
+                    270,
+                    70
+                ],
+                "size": [
+                    120,
+                    40
+                ]
+            },
+            "behavior": {
+                "initial_value": 0.2,
+                "units": "rad"
+            }
+        },
+        {
+            "type": "STOCK",
+            "name": "Angular Velocity",
+            "display": {
+                "coordinates": [
+                    270,
+                    180
+                ],
+                "size": [
+                    120,
+                    40
+                ]
+            },
+            "behavior": {
+                "initial_value": 0,
+                "units": "rad/s"
+            }
+        },
+        {
+            "type": "VARIABLE",
+            "name": "Mass",
+            "display": {
+                "interactive": true,
+                "interactive_min": 0.1,
+                "interactive_max": 10,
+                "coordinates": [
+                    30,
+                    280
+                ],
+                "size": [
+                    80,
+                    40
+                ]
+            },
+            "behavior": {
+                "value": 1,
+                "units": "kg"
+            }
+        },
+        {
+            "type": "VARIABLE",
+            "name": "Length",
+            "display": {
+                "interactive": true,
+                "interactive_min": 0.1,
+                "interactive_max": 10,
+                "coordinates": [
+                    330,
+                    280
+                ],
+                "size": [
+                    80,
+                    40
+                ]
+            },
+            "behavior": {
+                "value": 1,
+                "units": "m"
+            }
+        },
+        {
+            "type": "VARIABLE",
+            "name": "Gravity",
+            "display": {
+                "coordinates": [
+                    250,
+                    360
+                ],
+                "size": [
+                    80,
+                    40
+                ]
+            },
+            "behavior": {
+                "value": 9.81,
+                "units": "m / s^2"
+            }
+        },
+        {
+            "type": "VARIABLE",
+            "name": "Damping Coefficient",
+            "display": {
+                "interactive": true,
+                "interactive_min": 0,
+                "interactive_max": 1,
+                "coordinates": [
+                    70,
+                    380
+                ],
+                "size": [
+                    150,
+                    40
+                ]
+            },
+            "behavior": {
+                "value": 0.2,
+                "units": "kg * m^2 / s"
+            }
+        },
+        {
+            "type": "FLOW",
+            "name": "Angle Rate",
+            "from": null,
+            "to": "Angle",
+            "display": {
+                "from_coordinates": [
+                    110,
+                    90
+                ]
+            },
+            "behavior": {
+                "value": "[Angular Velocity]",
+                "units": "rad / s"
+            }
+        },
+        {
+            "type": "FLOW",
+            "name": "Angular Acceleration",
+            "from": null,
+            "to": "Angular Velocity",
+            "display": {
+                "from_coordinates": [
+                    110,
+                    200
+                ]
+            },
+            "behavior": {
+                "value": "-([Damping Coefficient]/([Mass]*[Length]^2))*[Angular Velocity] - ([Gravity]/[Length])*sin([Angle]) * {1 radian}",
+                "units": "rad / s^2"
+            }
+        },
+        {
+            "type": "LINK",
+            "from": "Angular Velocity",
+            "to": "Angle Rate"
+        },
+        {
+            "type": "LINK",
+            "from": "Angle",
+            "to": "Angular Acceleration"
+        },
+        {
+            "type": "LINK",
+            "from": "Mass",
+            "to": "Angular Acceleration"
+        },
+        {
+            "type": "LINK",
+            "from": "Length",
+            "to": "Angular Acceleration"
+        },
+        {
+            "type": "LINK",
+            "from": "Gravity",
+            "to": "Angular Acceleration"
+        },
+        {
+            "type": "LINK",
+            "from": "Damping Coefficient",
+            "to": "Angular Acceleration"
+        }
+    ],
+    "visualizations": [
+        {
+            "type": "TIME_SERIES",
+            "name": "Pendulum States",
+            "elements": [
+                "Angle",
+                "Angular Velocity"
+            ]
+        }
+    ]
+}`
+  },
+  {
+    file: 'population.json',
+    name: 'Population Model',
+    modeljson: `{
+    "engine": "SIMULATION_PACKAGE",
+    "name": "Population Growth",
+    "simulation": {
+        "algorithm": "RK4",
+        "time_start": 0,
+        "time_length": 20,
+        "time_step": 0.2,
+        "time_units": "YEARS"
+    },
+    "elements": [
+        {
+            "type": "STOCK",
+            "name": "Population",
+            "display": {
+                "coordinates": [
+                    130,
+                    210
+                ],
+                "size": [
+                    100,
+                    40
+                ]
+            },
+            "behavior": {
+                "initial_value": 1,
+                "non_negative": true
+            }
+        },
+        {
+            "type": "CONVERTER",
+            "name": "Growth Rate",
+            "display": {
+                "coordinates": [
+                    260,
+                    90
+                ],
+                "size": [
+                    120,
+                    50
+                ]
+            },
+            "behavior": {
+                "input": "ELEMENT",
+                "interpolation": "LINEAR",
+                "data": [
+                    [
+                        0,
+                        2
+                    ],
+                    [
+                        1500,
+                        1.07
+                    ],
+                    [
+                        3990,
+                        0.429
+                    ],
+                    [
+                        6780,
+                        0.125
+                    ],
+                    [
+                        10000,
+                        0
+                    ]
+                ],
+                "input_element": "Population"
+            }
+        },
+        {
+            "type": "FLOW",
+            "name": "Flow",
+            "from": null,
+            "to": "Population",
+            "display": {
+                "from_coordinates": [
+                    180,
+                    60
+                ]
+            },
+            "behavior": {
+                "value": "[Population] * [Growth Rate]",
+                "non_negative": true
+            }
+        },
+        {
+            "type": "LINK",
+            "from": "Growth Rate",
+            "to": "Flow"
+        },
+        {
+            "type": "LINK",
+            "from": "Population",
+            "to": "Growth Rate"
+        }
+    ],
+    "visualizations": [
+        {
+            "type": "TIME_SERIES",
+            "name": "Default Display",
+            "elements": [
+                "Population"
+            ]
+        }
+    ]
+}`
+  }
+
+];
+
+EXAMPLES.forEach(example => {
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.download = example.file;
+    a.href = `data:application/json;charset=utf-8,${encodeURIComponent(example.modeljson)}`;
+    a.innerHTML = `<svg style="width: 32px; height: 32px; opacity: .4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M149.9 349.1l-.2-.2-32.8-28.9 32.8-28.9c3.6-3.2 4-8.8 .8-12.4l-.2-.2-17.4-18.6c-3.4-3.6-9-3.7-12.4-.4l-57.7 54.1c-3.7 3.5-3.7 9.4 0 12.8l57.7 54.1c1.6 1.5 3.8 2.4 6 2.4 2.4 0 4.8-1 6.4-2.8l17.4-18.6c3.3-3.5 3.1-9.1-.4-12.4zm220-251.2L286 14C277 5 264.8-.1 252.1-.1H48C21.5 0 0 21.5 0 48v416c0 26.5 21.5 48 48 48h288c26.5 0 48-21.5 48-48V131.9c0-12.7-5.1-25-14.1-34zM256 51.9l76.1 76.1H256zM336 464H48V48h160v104c0 13.3 10.7 24 24 24h104zM209.6 214c-4.7-1.4-9.5 1.3-10.9 6L144 408.1c-1.4 4.7 1.3 9.6 6 10.9l24.4 7.1c4.7 1.4 9.6-1.4 10.9-6L240 231.9c1.4-4.7-1.3-9.6-6-10.9zm24.5 76.9l.2 .2 32.8 28.9-32.8 28.9c-3.6 3.2-4 8.8-.8 12.4l.2 .2 17.4 18.6c3.3 3.5 8.9 3.7 12.4 .4l57.7-54.1c3.7-3.5 3.7-9.4 0-12.8l-57.7-54.1c-3.5-3.3-9.1-3.2-12.4 .4l-17.4 18.6c-3.3 3.5-3.1 9.1 .4 12.4z"/></svg> ${example.name}`;
+    li.appendChild(a);
+    document.querySelector('.examples-list').appendChild(li);
+});
+</script>
+</body>
+</html>
