@@ -237,209 +237,209 @@ The following examples illustrate the usage of various features of the ModelJSON
 
 ```json
 {
-    "engine": "SIMULATION_PACKAGE",
-    "name": "Damped pendulum",
-    "description": "A simple damped pendulum model. Uses common SI units mapping to SIMULATION_PACKAGE built-in units.",
-    "simulation": {
-        "algorithm": "RK4",
-        "time_start": 0,
-        "time_length": 10,
-        "time_step": 0.1,
-        "time_units": "SECONDS"
-    },
-    "engine_settings": {
+	"engine": "SIMULATION_PACKAGE",
+	"name": "Damped pendulum",
+	"description": "A simple damped pendulum model. Uses common SI units mapping to SIMULATION_PACKAGE built-in units.",
+	"simulation": {
+		"algorithm": "RK4",
+		"time_start": 0,
+		"time_length": 10,
+		"time_step": 0.1,
+		"time_units": "SECONDS"
+	},
+	"engine_settings": {
 		"globals": "# Acceleration due to gravity\ng <- {9.81 m/s^2}",
-        "units": [
-            {
-                "name": "kg",
-                "base": "grams",
-                "factor": 1000
-            },
-            {
-                "name": "s",
-                "base": "seconds",
-                "factor": 1
-            },
-            {
-                "name": "m",
-                "base": "meters",
-                "factor": 1
-            },
-            {
-                "name": "rad",
-                "base": "radians",
-                "factor": 1
-            }
-        ]
-    },
-    "elements": [
-        {
-            "type": "STOCK",
-            "name": "Angle",
-            "display": {
-                "coordinates": [
-                    270,
-                    70
-                ],
-                "size": [
-                    120,
-                    40
-                ]
-            },
-            "behavior": {
-                "initial_value": 0.2,
-                "units": "rad"
-            }
-        },
-        {
-            "type": "STOCK",
-            "name": "Angular Velocity",
-            "display": {
-                "coordinates": [
-                    270,
-                    180
-                ],
-                "size": [
-                    120,
-                    40
-                ]
-            },
-            "behavior": {
-                "initial_value": 0,
-                "units": "rad/s"
-            }
-        },
-        {
-            "type": "VARIABLE",
-            "name": "Mass",
-            "display": {
-                "interactive": true,
-                "interactive_min": 0.1,
-                "interactive_max": 10,
-                "coordinates": [
-                    30,
-                    280
-                ],
-                "size": [
-                    80,
-                    40
-                ]
-            },
-            "behavior": {
-                "value": 1,
-                "units": "kg"
-            }
-        },
-        {
-            "type": "VARIABLE",
-            "name": "Length",
-            "display": {
-                "interactive": true,
-                "interactive_min": 0.1,
-                "interactive_max": 10,
-                "coordinates": [
-                    330,
-                    280
-                ],
-                "size": [
-                    80,
-                    40
-                ]
-            },
-            "behavior": {
-                "value": 1,
-                "units": "m"
-            }
-        },
-        {
-            "type": "VARIABLE",
-            "name": "Damping Coefficient",
-            "display": {
-                "interactive": true,
-                "interactive_min": 0,
-                "interactive_max": 1,
-                "coordinates": [
-                    70,
-                    380
-                ],
-                "size": [
-                    150,
-                    40
-                ]
-            },
-            "behavior": {
-                "value": 0.2,
-                "units": "kg * m^2 / s"
-            }
-        },
-        {
-            "type": "FLOW",
-            "name": "Angle Rate",
-            "from": null,
-            "to": "Angle",
-            "display": {
-                "from_coordinates": [
-                    110,
-                    90
-                ]
-            },
-            "behavior": {
-                "value": "[Angular Velocity]",
-                "units": "rad / s"
-            }
-        },
-        {
-            "type": "FLOW",
-            "name": "Angular Acceleration",
-            "from": null,
-            "to": "Angular Velocity",
-            "display": {
-                "from_coordinates": [
-                    110,
-                    200
-                ]
-            },
-            "behavior": {
-                "value": "-([Damping Coefficient]/([Mass]*[Length]^2))*[Angular Velocity] - (g /[Length])*sin([Angle]) * {1 radian}",
-                "units": "rad / s^2"
-            }
-        },
-        {
-            "type": "LINK",
-            "from": "Angular Velocity",
-            "to": "Angle Rate"
-        },
-        {
-            "type": "LINK",
-            "from": "Angle",
-            "to": "Angular Acceleration"
-        },
-        {
-            "type": "LINK",
-            "from": "Mass",
-            "to": "Angular Acceleration"
-        },
-        {
-            "type": "LINK",
-            "from": "Length",
-            "to": "Angular Acceleration"
-        },
-        {
-            "type": "LINK",
-            "from": "Damping Coefficient",
-            "to": "Angular Acceleration"
-        }
-    ],
-    "visualizations": [
-        {
-            "type": "TIME_SERIES",
-            "name": "Pendulum States",
-            "elements": [
-                "Angle",
-                "Angular Velocity"
-            ]
-        }
-    ]
+		"units": [
+			{
+				"name": "kg",
+				"base": "grams",
+				"factor": 1000
+			},
+			{
+				"name": "s",
+				"base": "seconds",
+				"factor": 1
+			},
+			{
+				"name": "m",
+				"base": "meters",
+				"factor": 1
+			},
+			{
+				"name": "rad",
+				"base": "radians",
+				"factor": 1
+			}
+		]
+	},
+	"elements": [
+		{
+			"type": "STOCK",
+			"name": "Angle",
+			"display": {
+				"coordinates": [
+					270,
+					70
+				],
+				"size": [
+					120,
+					40
+				]
+			},
+			"behavior": {
+				"initial_value": 0.2,
+				"units": "rad"
+			}
+		},
+		{
+			"type": "STOCK",
+			"name": "Angular Velocity",
+			"display": {
+				"coordinates": [
+					270,
+					180
+				],
+				"size": [
+					120,
+					40
+				]
+			},
+			"behavior": {
+				"initial_value": 0,
+				"units": "rad/s"
+			}
+		},
+		{
+			"type": "VARIABLE",
+			"name": "Mass",
+			"display": {
+				"interactive": true,
+				"interactive_min": 0.1,
+				"interactive_max": 10,
+				"coordinates": [
+					30,
+					280
+				],
+				"size": [
+					80,
+					40
+				]
+			},
+			"behavior": {
+				"value": 1,
+				"units": "kg"
+			}
+		},
+		{
+			"type": "VARIABLE",
+			"name": "Length",
+			"display": {
+				"interactive": true,
+				"interactive_min": 0.1,
+				"interactive_max": 10,
+				"coordinates": [
+					330,
+					280
+				],
+				"size": [
+					80,
+					40
+				]
+			},
+			"behavior": {
+				"value": 1,
+				"units": "m"
+			}
+		},
+		{
+			"type": "VARIABLE",
+			"name": "Damping Coefficient",
+			"display": {
+				"interactive": true,
+				"interactive_min": 0,
+				"interactive_max": 1,
+				"coordinates": [
+					70,
+					380
+				],
+				"size": [
+					150,
+					40
+				]
+			},
+			"behavior": {
+				"value": 0.2,
+				"units": "kg * m^2 / s"
+			}
+		},
+		{
+			"type": "FLOW",
+			"name": "Angle Rate",
+			"from": null,
+			"to": "Angle",
+			"display": {
+				"from_coordinates": [
+					110,
+					90
+				]
+			},
+			"behavior": {
+				"value": "[Angular Velocity]",
+				"units": "rad / s"
+			}
+		},
+		{
+			"type": "FLOW",
+			"name": "Angular Acceleration",
+			"from": null,
+			"to": "Angular Velocity",
+			"display": {
+				"from_coordinates": [
+					110,
+					200
+				]
+			},
+			"behavior": {
+				"value": "-([Damping Coefficient]/([Mass]*[Length]^2))*[Angular Velocity] - (g /[Length])*sin([Angle]) * {1 radian}",
+				"units": "rad / s^2"
+			}
+		},
+		{
+			"type": "LINK",
+			"from": "Angular Velocity",
+			"to": "Angle Rate"
+		},
+		{
+			"type": "LINK",
+			"from": "Angle",
+			"to": "Angular Acceleration"
+		},
+		{
+			"type": "LINK",
+			"from": "Mass",
+			"to": "Angular Acceleration"
+		},
+		{
+			"type": "LINK",
+			"from": "Length",
+			"to": "Angular Acceleration"
+		},
+		{
+			"type": "LINK",
+			"from": "Damping Coefficient",
+			"to": "Angular Acceleration"
+		}
+	],
+	"visualizations": [
+		{
+			"type": "TIME_SERIES",
+			"name": "Pendulum States",
+			"elements": [
+				"Angle",
+				"Angular Velocity"
+			]
+		}
+	]
 }
 ```
 
@@ -756,7 +756,7 @@ The following examples illustrate the usage of various features of the ModelJSON
 				"initial_value": 100
 			},
 			"display": {
-                "interactive": true,
+				"interactive": true,
 				"interactive_min": 0,
 				"interactive_max": 100,
 
