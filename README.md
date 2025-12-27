@@ -34,6 +34,7 @@ The root of the schema is a JSON object with the following properties:
 - `description` {string} [optional] – A description of the model.
 - `file_notes` {string} [optional] - Notes on any issues that were encountered generating the ModelJSON file. This can be used to flag incompatibility issues or things that were stripped during export. It may be displayed to users on import.
 - `engine` {"SIMULATION_PACKAGE"} [optional] – A string indicating a specific dialect of ModelJSON that is being used. This determines the syntax and behavior for formulas and units. See the [Engines](#engines) section below for more details. 
+- `engine_settings` {object} [optional] – Configuration settings for the selected engine.
 - `simulation` {SimulationObject} [optional] – An object specifying the settings and parameters of the simulation.  
 - `elements` {ElementObject[]} [required] – An array of objects, each representing a basic element in the simulation (e.g., stocks, flows, variables, or links).  
 - `visualizations` {VisualizationObject[]} [optional] – Array of visualizations for simulation results.
@@ -43,7 +44,7 @@ The root of the schema is a JSON object with the following properties:
 - `algorithm` {"RK1"|"RK4"} [optional] – Numerical algorithm for the simulation. "RK1" denotes Euler's method, and "RK4" a fourth-order Runge-Kutta.  
 - `time_start` {number} [optional] – The start time of the simulation.  
 - `time_length` {number} [optional] – The total length of the simulation.  
-- `time_step` {number} [optional] – The time step of the simulation.  
+- `time_step` {number} [optional] – The time step of the simulation.
 - `time_units` {"SECONDS"|"MINUTES"|"HOURS"|"DAYS"|"WEEKS"|"MONTHS"|"YEARS"} [optional] – The time units `time_start`, `time_length` and `time_step` are defined in these units.
 
 ### ElementObject
@@ -53,6 +54,7 @@ The root of the schema is a JSON object with the following properties:
 - `description` {string} [optional] – Additional descriptive text about the element.  
 - `display`
   - `interactive` {boolean} [optional] – If `true`, indicates that it should be simple for a user to adjust this element’s value (e.g., with an interactive slider).  
+  - `symbol` {string} [optional] - An emoji used to visually represent the element.
 
 Depending on the `type`, other properties may be required or optional. See [Element Types](#element-types) below.
 
@@ -60,7 +62,7 @@ Depending on the `type`, other properties may be required or optional. See [Elem
 
 - `type` {"TIME_SERIES"|"TABLE"} [required] - The type of the visualization.
 - `name` {string} [optional] – A name for the visualization (may be displayed as a graph/table title).
-- `elements` {string[]} [required] - An array of elements to include in the visualization.
+- `elements` {string[]} [required] - An array of element names to include in the visualization.
 
 ### Element Types
 
@@ -132,7 +134,7 @@ Additionally, the properties from the [node](#node) mixin are included.
 
 #### State
 
-A State is boolean, `true`/`false` state variable.
+A State is a boolean, `true`/`false` state variable.
 
 The following additional properties are available:
 
@@ -163,8 +165,8 @@ Some element types share common properties. The following mixins may be used wit
 
 These additional properties apply to connector-type elements:
 
-- `from` {string} [required] – The name of the start element. `null` is used to indicate the connector is not connected at the start. 
-- `to` {string} [required] – The name of the end element. `null` is used to indicate the connector is not connected at the end. 
+- `from` {string|null} [required] – The name of the start element. `null` is used to indicate the connector is not connected at the start. 
+- `to` {string|null} [required] – The name of the end element. `null` is used to indicate the connector is not connected at the end. 
 - `display`
   - `from_coordinates` {[number, number]} [optional - only specified if `from` is not connected] - [`x`, `y`] position for the end of the connector from the top left corner.
   - `to_coordinates` {[number, number]} [optional - only specified if `to` is not connected] - [`x`, `y`] position for the end of the connector from the top left corner.
@@ -189,19 +191,40 @@ For elements with a slider or numeric interactive UI:
 
 ModelJSON does not attempt to standardize model formulas. Instead, an `engine` property is specified, indicating how formulas should be parsed and evaluated. Code to parse and evaluate formulas for each recognized `engine` is provided.
 
-The `engine` governs the parsing and evaluation of the following properties: `value`, `initial_value`, and `units`.
+The `engine` governs the parsing and evaluation of the following properties: `value`, `initial_value`, and `units`. Some engines may support additional configuration via the `engine_settings` property.
+
+To add support for additional engines to ModelJSON, please submit a PR.
 
 Currently supported engines:
 
-- **SIMULATION_PACKAGE**: [NPM `simulation` package](https://github.com/scottfr/simulation) format  
-  - Code is available to parse and evaluate formulas in that repository.
+### SIMULATION_PACKAGE Engine
 
-Please submit a PR to add additional engines.
+[NPM `simulation` package](https://github.com/scottfr/simulation)'s format. Code is available to parse and evaluate formulas in the linked repository.
 
+`engine_settings` supports the following properties for the **SIMULATION_PACKAGE** engine:
+
+ - `units` {UnitObject[]} [optional] - Array of custom units used in the model. This allows extending the built-in units with additional custom unit conversions.
+ - `globals` {string} [optional] - Code that is run at the start of the simulation to set up global functions or variables or configure other behaviors.
+
+#### UnitObject
+
+- `name` {string} - The name of the unit.
+- `base` {string} [optional] - Another unit these units may be converted to. Required if `factor` is specified.
+- `factor` {number} [optional] - Units of `name` * `factor` equals units of `base`. Required if `base` is specified.
+
+For example, you could define the following unit `Century` which automatically converts to and from the built-in unit `Year`:
+
+```json
+{
+	"name": "Century",
+	"base": "Year",
+	"factor": 100
+}
+```
 
 ## Extending ModelJSON
 
-In some cases, you may wish to use the ModelJSON format but need a property it does not currently support. Please open an issue to discuss extending the format.
+In some cases, you may wish to use the ModelJSON format but need a property that it does not currently support. Please open an issue to discuss extending the format.
 
 You may also take advantage of the fact that standard properties and constant values will never start with an underscore (`_`). If you wish to add a custom property or constant value to your own ModelJSON objects, you may do so as long as you prepend it with an underscore (e.g., `_my_custom_property` or `"_CONSTANT_VALUE"`).
 
@@ -214,170 +237,209 @@ The following examples illustrate the usage of various features of the ModelJSON
 
 ```json
 {
-	"engine": "SIMULATION_PACKAGE",
-	"name": "Damped pendulum",
-	"description": "A simple damped pendulum model.",
-	"simulation": {
-		"algorithm": "RK4",
-		"time_start": 0,
-		"time_length": 10,
-		"time_step": 0.1,
-		"time_units": "SECONDS"
-	},
-	"elements": [
-		{
-			"type": "STOCK",
-			"name": "Angle",
-			"display": {
-				"coordinates": [270, 70],
-				"size": [120, 40]
-			},
-			"behavior": {
-				"initial_value": 0.2,
-				"non_negative": false,
-				"units": "radians"
-			}
-		},
-		{
-			"type": "STOCK",
-			"name": "Angular Velocity",
-			"display": {
-				"coordinates": [270, 180],
-				"size": [120, 40]
-			},
-			"behavior": {
-				"initial_value": 0,
-				"non_negative": false,
-				"units": "radians/second"
-			}
-		},
-		{
-			"type": "VARIABLE",
-			"name": "Mass",
-			"display": {
-				"interactive": true,
-				"interactive_min": 0.1,
-				"interactive_max": 10,
-
-				"coordinates": [30, 280],
-				"size": [80, 40]
-			},
-			"behavior": {
-				"value": 1,
-				"units": "kilograms"
-			}
-		},
-		{
-			"type": "VARIABLE",
-			"name": "Length",
-			"display": {
-				"interactive": true,
-				"interactive_min": 0.1,
-				"interactive_max": 10,
-
-				"coordinates": [330, 280],
-				"size": [80, 40]
-			},
-			"behavior": {
-				"value": 1,
-				"units": "meters"
-			}
-		},
-		{
-			"type": "VARIABLE",
-			"name": "Gravity",
-			"display": {
-				"coordinates": [250, 360],
-				"size": [80, 40]
-			},
-			"behavior": {
-				"value": 9.81,
-				"units": "meters / seconds^2"
-			}
-		},
-		{
-			"type": "VARIABLE",
-			"name": "Damping Coefficient",
-			"display": {
-				"interactive": true,
-				"interactive_min": 0,
-				"interactive_max": 1,
-
-				"coordinates": [70, 380],
-				"size": [150, 40]
-			},
-			"behavior": {
-				"value": 0.2,
-				"units": "kilograms * meters^2 / seconds"
-			}
-		},
-		{
-			"type": "FLOW",
-			"name": "Angle Rate",
-			"from": null,
-			"to": "Angle",
-			"display": {
-				"from_coordinates": [110, 90]
-			},
-			"behavior": {
-				"value": "[Angular Velocity]",
-				"units": "Radians / Second"
-			}
-		},
-		{
-			"type": "FLOW",
-			"name": "Angular Acceleration",
-			"from": null,
-			"to": "Angular Velocity",
-			"display": {
-				"from_coordinates": [110, 200]
-			},
-			"behavior": {
-				"value": "-([Damping Coefficient]/([Mass]*[Length]^2))*[Angular Velocity] - ([Gravity]/[Length])*sin([Angle]) * {1 radian}",
-				"units": "Radians / Second^2"
-			}
-		},
-		{
-			"type": "LINK",
-			"from": "Angular Velocity",
-			"to": "Angle Rate"
-		},
-		{
-			"type": "LINK",
-			"from": "Angle",
-			"to": "Angular Acceleration"
-		},
-		{
-			"type": "LINK",
-			"from": "Mass",
-			"to": "Angular Acceleration"
-		},
-		{
-			"type": "LINK",
-			"from": "Length",
-			"to": "Angular Acceleration"
-		},
-		{
-			"type": "LINK",
-			"from": "Gravity",
-			"to": "Angular Acceleration"
-		},
-		{
-			"type": "LINK",
-			"from": "Damping Coefficient",
-			"to": "Angular Acceleration"
-		}
-	],
-	"visualizations": [
-		{
-			"type": "TIME_SERIES",
-			"name": "Pendulum States",
-			"elements": [
-				"Angle",
-				"Angular Velocity"
-			]
-		}
-	]
+    "engine": "SIMULATION_PACKAGE",
+    "name": "Damped pendulum",
+    "description": "A simple damped pendulum model. Uses common SI units mapping to SIMULATION_PACKAGE built-in units.",
+    "simulation": {
+        "algorithm": "RK4",
+        "time_start": 0,
+        "time_length": 10,
+        "time_step": 0.1,
+        "time_units": "SECONDS"
+    },
+    "engine_settings": {
+		"globals": "# Acceleration due to gravity\ng <- {9.81 m/s^2}",
+        "units": [
+            {
+                "name": "kg",
+                "base": "grams",
+                "factor": 1000
+            },
+            {
+                "name": "s",
+                "base": "seconds",
+                "factor": 1
+            },
+            {
+                "name": "m",
+                "base": "meters",
+                "factor": 1
+            },
+            {
+                "name": "rad",
+                "base": "radians",
+                "factor": 1
+            }
+        ]
+    },
+    "elements": [
+        {
+            "type": "STOCK",
+            "name": "Angle",
+            "display": {
+                "coordinates": [
+                    270,
+                    70
+                ],
+                "size": [
+                    120,
+                    40
+                ]
+            },
+            "behavior": {
+                "initial_value": 0.2,
+                "units": "rad"
+            }
+        },
+        {
+            "type": "STOCK",
+            "name": "Angular Velocity",
+            "display": {
+                "coordinates": [
+                    270,
+                    180
+                ],
+                "size": [
+                    120,
+                    40
+                ]
+            },
+            "behavior": {
+                "initial_value": 0,
+                "units": "rad/s"
+            }
+        },
+        {
+            "type": "VARIABLE",
+            "name": "Mass",
+            "display": {
+                "interactive": true,
+                "interactive_min": 0.1,
+                "interactive_max": 10,
+                "coordinates": [
+                    30,
+                    280
+                ],
+                "size": [
+                    80,
+                    40
+                ]
+            },
+            "behavior": {
+                "value": 1,
+                "units": "kg"
+            }
+        },
+        {
+            "type": "VARIABLE",
+            "name": "Length",
+            "display": {
+                "interactive": true,
+                "interactive_min": 0.1,
+                "interactive_max": 10,
+                "coordinates": [
+                    330,
+                    280
+                ],
+                "size": [
+                    80,
+                    40
+                ]
+            },
+            "behavior": {
+                "value": 1,
+                "units": "m"
+            }
+        },
+        {
+            "type": "VARIABLE",
+            "name": "Damping Coefficient",
+            "display": {
+                "interactive": true,
+                "interactive_min": 0,
+                "interactive_max": 1,
+                "coordinates": [
+                    70,
+                    380
+                ],
+                "size": [
+                    150,
+                    40
+                ]
+            },
+            "behavior": {
+                "value": 0.2,
+                "units": "kg * m^2 / s"
+            }
+        },
+        {
+            "type": "FLOW",
+            "name": "Angle Rate",
+            "from": null,
+            "to": "Angle",
+            "display": {
+                "from_coordinates": [
+                    110,
+                    90
+                ]
+            },
+            "behavior": {
+                "value": "[Angular Velocity]",
+                "units": "rad / s"
+            }
+        },
+        {
+            "type": "FLOW",
+            "name": "Angular Acceleration",
+            "from": null,
+            "to": "Angular Velocity",
+            "display": {
+                "from_coordinates": [
+                    110,
+                    200
+                ]
+            },
+            "behavior": {
+                "value": "-([Damping Coefficient]/([Mass]*[Length]^2))*[Angular Velocity] - (g /[Length])*sin([Angle]) * {1 radian}",
+                "units": "rad / s^2"
+            }
+        },
+        {
+            "type": "LINK",
+            "from": "Angular Velocity",
+            "to": "Angle Rate"
+        },
+        {
+            "type": "LINK",
+            "from": "Angle",
+            "to": "Angular Acceleration"
+        },
+        {
+            "type": "LINK",
+            "from": "Mass",
+            "to": "Angular Acceleration"
+        },
+        {
+            "type": "LINK",
+            "from": "Length",
+            "to": "Angular Acceleration"
+        },
+        {
+            "type": "LINK",
+            "from": "Damping Coefficient",
+            "to": "Angular Acceleration"
+        }
+    ],
+    "visualizations": [
+        {
+            "type": "TIME_SERIES",
+            "name": "Pendulum States",
+            "elements": [
+                "Angle",
+                "Angular Velocity"
+            ]
+        }
+    ]
 }
 ```
 
@@ -487,6 +549,8 @@ The following examples illustrate the usage of various features of the ModelJSON
 				"units": "Prey"
 			},
 			"display": {
+				"symbol": "🐰",
+
 				"interactive": true,
 				"interactive_min": 0,
 				"interactive_max": 1000,
@@ -552,6 +616,8 @@ The following examples illustrate the usage of various features of the ModelJSON
 				"units": "Predators"
 			},
 			"display": {
+				"symbol": "🦊",
+
 				"interactive": true,
 				"interactive_min": 0,
 				"interactive_max": 100,
