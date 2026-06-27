@@ -38,6 +38,7 @@ The root of the schema is a JSON object with the following properties:
 - `simulation` {SimulationObject} [optional] – An object specifying the settings and parameters of the simulation.  
 - `elements` {ElementObject[]} [required] – An array of objects, each representing a basic element in the simulation (e.g., stocks, flows, variables, or links).  
 - `visualizations` {VisualizationObject[]} [optional] – Array of visualizations for simulation results.
+- `scenarios` {ScenarioObject[]} [optional] – Array of scenarios for model elements.
 
 ### SimulationObject
 
@@ -63,6 +64,12 @@ Depending on the `type`, other properties may be required or optional. See [Elem
 - `type` {"TIME_SERIES"|"TABLE"} [required] - The type of the visualization.
 - `name` {string} [optional] – A name for the visualization (may be displayed as a graph/table title).
 - `elements` {string[]} [required] - An array of element names to include in the visualization.
+
+### ScenarioObject
+
+- `name` {string} [required] - The name of the scenario
+- `description` {string} [optional] - A description of the scenario
+- `values` {Object<string, number|string|boolean>} [required] - A map of element names to the `value` or `initial_value` they take on in this scenario.
 
 ### Element Types
 
@@ -861,6 +868,40 @@ The following examples illustrate the usage of various features of the ModelJSON
 			"name": "Disease Spread",
 			"elements": ["I", "R", "S"]
 		}
+	],
+	"scenarios": [
+		{
+			"name": "Baseline",
+			"values": {
+				"S": 100,
+				"I": 3,
+				"R": 0,
+				"β": 0.01,
+				"γ": 0.3
+			}
+		},
+		{
+			"name": "Higher Transmission",
+			"description": "This scenario explores a higher infection rate.",
+			"values": {
+				"S": 100,
+				"I": 3,
+				"R": 0,
+				"β": 0.02,
+				"γ": 0.3
+			}
+		},
+		{
+			"name": "Reduced Transmission",
+			"description": "This scenario explores the effects of a reduced infection rate.",
+			"values": {
+				"S": 100,
+				"I": 3,
+				"R": 0,
+				"β": 0.005,
+				"γ": 0.3
+			}
+		}
 	]
 }
 ```
@@ -1053,7 +1094,7 @@ The following examples illustrate the usage of various features of the ModelJSON
 				"from_coordinates": [440, 90]
 			},
 			"behavior": {
-				"value": "if [Is Filling] then\n  10\nend if",
+				"value": "if [Is Filling] then\n  10\nelse\n  0\nend if",
 				"non_negative": true,
 				"units": "Liters/Minute"
 			}
@@ -1068,7 +1109,7 @@ The following examples illustrate the usage of various features of the ModelJSON
 				"to_coordinates": [440, 400]
 			},
 			"behavior": {
-				"value": "if [Is Draining] then\n  {0.2 1/Minute} * [Bathtub]\nend if",
+				"value": "if [Is Draining] then\n  {0.2 1/Minute} * [Bathtub]\nelse\n  0\nend if",
 				"non_negative": true,
 				"units": "Liters/Minute"
 			}

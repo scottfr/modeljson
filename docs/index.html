@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ModelJSON</title>
   <link rel="stylesheet" href="/styles.css">
-  <script nonce="<%= cspNonce %>"></script>
   <style>
     * {
         margin: 0;
@@ -119,7 +118,7 @@
 }
 
   </style>
-</html>
+</head>
 <body>
     <img src="images/modeljson.png" alt="ModelJSON Logo" height="80" />
     <h1>ModelJSON Playground</h1>
@@ -135,7 +134,7 @@
       </div>
     </div>
     <p>
-      This preview can only handle ModelJSON files of a limited size. For larger files, you can import/export ModelJSON filest from the Share menu in an Insight Maker model (https://insightmaker.com/insight > "Share menu" > "Import").
+      This preview can only handle ModelJSON files of a limited size. For larger files, you can import/export ModelJSON files from the Share menu in an Insight Maker model (https://insightmaker.com/insight > "Share menu" > "Import").
     </p>
 
 
@@ -143,7 +142,7 @@
     <div class="spec-section">
     <h1 style="margin-bottom: 24px">ModelJSON Specification</h1>
 
-    <p>The <a href="https://github.com/scottfr/modeljson">ModelJSON specification is availble here</a>. Comments and feedback on it are welcomed as Github issues.</p>
+    <p>The <a href="https://github.com/scottfr/modeljson">ModelJSON specification is available here</a>. Comments and feedback on it are welcomed as Github issues.</p>
 
     </div>
 
@@ -352,7 +351,7 @@ const EXAMPLES = [
                 ]
             },
             "behavior": {
-                "value": "if [Is Filling] then\\n  10\\nend if",
+                "value": "if [Is Filling] then\\n  10\\nelse\\n  0\\nend if",
                 "non_negative": true,
                 "units": "Liters/Minute"
             }
@@ -370,7 +369,7 @@ const EXAMPLES = [
                 ]
             },
             "behavior": {
-                "value": "if [Is Draining] then\\n  {0.2 1/Minute} * [Bathtub]\\nend if",
+                "value": "if [Is Draining] then\\n  {0.2 1/Minute} * [Bathtub]\\nelse\\n  0\\nend if",
                 "non_negative": true,
                 "units": "Liters/Minute"
             }
@@ -409,7 +408,7 @@ const EXAMPLES = [
     },
     {
         file: 'cld.json',
-        name: 'Casual Loop Diagram',
+        name: 'Causal Loop Diagram',
         modeljson: `{
     "elements": [
         {
@@ -687,6 +686,40 @@ const EXAMPLES = [
                 "R",
                 "S"
             ]
+        }
+    ],
+    "scenarios": [
+        {
+            "name": "Baseline",
+            "values": {
+                "S": 100,
+                "I": 3,
+                "R": 0,
+                "β": 0.01,
+                "γ": 0.3
+            }
+        },
+        {
+            "name": "Higher Transmission",
+            "description": "This scenario explores a higher infection rate.",
+            "values": {
+                "S": 100,
+                "I": 3,
+                "R": 0,
+                "β": 0.02,
+                "γ": 0.3
+            }
+        },
+        {
+            "name": "Reduced Transmission",
+            "description": "This scenario explores the effects of a reduced infection rate.",
+            "values": {
+                "S": 100,
+                "I": 3,
+                "R": 0,
+                "β": 0.005,
+                "γ": 0.3
+            }
         }
     ]
 }
